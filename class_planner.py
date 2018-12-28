@@ -267,7 +267,7 @@ def add_spaces(number):
         print("")
 
 def logo_and_info_bar(classPlanner):
-# prints logo and welcome message
+    # prints logo and welcome message
     os.system("cat class_planner_logo.txt")
     print("welcome to the class planner!")
     print("class: {}\ndays left: {}\nchapters left: {}\ncurrent chapter: {}".format(
@@ -296,15 +296,9 @@ last_user_file = system.system_data["lastSaveFile"]
 if last_user_file != "":
     # loads the user file into the classPlanners class_data
     classPlanner.load_user_file(last_user_file)
-    #prints data from the save file
-    #print("class: {}\ndays left: {}\nchapters left: {}\ncurrent chapter: {}".format(
-    #    classPlanner.get_class_name(),
-    #    classPlanner.calculate_days_left(),
-    #    classPlanner.get_chapters_left(),
-    #    classPlanner.get_current_chapter()
-    #    ))
-    #add_spaces(10)
 else:
+    os.system("cat class_planner_logo.txt")
+    print("welcome to the class planner!")
     classPlanner.create_class_plan()
 
 # infinite loop of destruction!!!
