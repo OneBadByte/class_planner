@@ -48,7 +48,6 @@ class ClassPlanner:
             "chapterNumberList": [],
             "chapterLengthList": [],
             "chapterLengthTotal": 0,
-            "chaptersLeft": 0,
             "saveFile": "",
             "endDate":{
                 "year": 2019,
@@ -101,10 +100,6 @@ class ClassPlanner:
         """gets the current chapter number"""
         return self.class_data["chapterNumberList"][0]
     
-    #def set_current_chapter(self, current_chapter):
-    #    """sets the current chapter"""
-    #    self.class_data["currentChapter"] = current_chapter
-    
     def set_save_file(self, file_name):
         """sets the name of users save file"""
         self.class_data["saveFile"] = file_name
@@ -122,7 +117,7 @@ class ClassPlanner:
         return self.class_data["chapterLengthList"]
 
     def get_chapters_left(self):
-        return self.class_data["chaptersLeft"]
+        return len(self.get_chapter_number_list())
 
     def get_days_left(self):
         return self.class_data["daysLeft"]
@@ -357,7 +352,6 @@ while True:
         elif user_input == 3:
             classPlanner.remove_chapter()
             file_saved = False
-            input("press anything to continue")
         # exits the program nicely
         else:
             system.change_last_save(classPlanner.get_save_file())
