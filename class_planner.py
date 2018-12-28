@@ -46,8 +46,8 @@ class ClassPlanner:
             "className": "",
             "daysLeft": 0,
             "chapterNumberList": [],
+            "chapterLengthList": [],
             "chapterLengthTotal": 0,
-            "chaptersFinished": [],
             "chaptersLeft": 0,
             "saveFile": "",
             "endDate":{
@@ -57,6 +57,16 @@ class ClassPlanner:
                 }
             }
 
+    def remove_chapter(self):
+        """removes the first chapter in the lists"""
+        if len(self.get_chapter_number_list()) > 1:
+            self.set_chapter_length_list(self.get_chapter_length_list()[1:])
+            self.set_chapter_number_list(self.get_chapter_number_list()[1:])
+        else:
+            print("Congradulations you finished the class!")
+            input("press anything to continue")
+
+
     def calculate_days_left(self):
         year = self.class_data["endDate"]["year"]
         month = self.class_data["endDate"]["month"]
@@ -65,6 +75,7 @@ class ClassPlanner:
         today = date.today() + timedelta(days=1)
         days_left = str(end_date - today).split(" ")
         days_left[2] 
+        self.set_days_left(int(days_left[0]))
         return ' '.join(days_left[:2])
 
 
@@ -73,6 +84,7 @@ class ClassPlanner:
         user_file = open(file_name, 'r')
         file_data = str(user_file.read())
         self.class_data = json.loads(file_data)
+        self.class_data["saveFile"] = file_name
     
     def write_user_file(self, file_name):
         """writes the users save file"""
@@ -84,6 +96,14 @@ class ClassPlanner:
     def get_save_file(self):
         """gets the name of users save file"""
         return self.class_data["saveFile"]
+
+    def get_current_chapter(self):
+        """gets the current chapter number"""
+        return self.class_data["chapterNumberList"][0]
+    
+    #def set_current_chapter(self, current_chapter):
+    #    """sets the current chapter"""
+    #    self.class_data["currentChapter"] = current_chapter
     
     def set_save_file(self, file_name):
         """sets the name of users save file"""
@@ -169,13 +189,14 @@ class ClassPlanner:
         self.set_save_file(file_name)
         self.write_user_file(file_name)
         print("done")
+        input("press anything to continue")
 
-    #TODO is this needed?
     def chapter_length_list_total(self):
         total = 0
         for x in self.get_chapter_length_list():
             total = total + x
         self.set_chapter_length_total(total)
+        return total
 
     def get_chapter_day_avg(self):
         """caculates how much work needs done each day"""
@@ -190,6 +211,7 @@ class ClassPlanner:
             print("chapter: {} read will average to: {}".format(self.get_chapter_number_list()[counter], math))
             total_to_be_minused = total_to_be_minused + x
             counter = counter + 1
+        input("press anything to continue")
 
     def day_planner(self):
         """creates a day plan using data from class_data"""
@@ -233,17 +255,32 @@ class ClassPlanner:
                 chapter_length_holder.append(chapter_length_list[chapter_iterator])
                 chapter_number_holder.append(chapter_number_list[chapter_iterator])
         add_spaces(2) 
+        input("press anything to continue")
                 
-        
-
 #-------------------------------------------------------------------------------------------------------
+
+file_saved = False
 
 def add_spaces(number):
     """adds spaces to the terminal"""
     for x in range(number):
         print("")
 
-
+def logo_and_info_bar(classPlanner):
+# prints logo and welcome message
+    os.system("cat class_planner_logo.txt")
+    print("welcome to the class planner!")
+    print("class: {}\ndays left: {}\nchapters left: {}\ncurrent chapter: {}".format(
+        classPlanner.get_class_name(),
+        classPlanner.calculate_days_left(),
+        classPlanner.get_chapters_left(),
+        classPlanner.get_current_chapter()
+        ))
+    if file_saved:
+        print("file: saved")
+    else:
+        print("file: not saved!")
+    add_spaces(10)
 
 #-------------------------------------------------------------------------------------------------------
 
@@ -254,36 +291,42 @@ system = SystemData()
 # checks for a system file
 system.check_for_system_file()
 
-# prints logo and welcome message
-os.system("cat class_planner_logo.txt")
-print("welcome to the class planner!")
-
 # gets the default user save file
 last_user_file = system.system_data["lastSaveFile"]
 if last_user_file != "":
     # loads the user file into the classPlanners class_data
     classPlanner.load_user_file(last_user_file)
     #prints data from the save file
-    print("class: {}\ndays left: {}\nchapters left: {}".format(
-        classPlanner.get_class_name(),
-        classPlanner.calculate_days_left(),
-        classPlanner.get_chapters_left()
-        ))
-    add_spaces(10)
+    #print("class: {}\ndays left: {}\nchapters left: {}\ncurrent chapter: {}".format(
+    #    classPlanner.get_class_name(),
+    #    classPlanner.calculate_days_left(),
+    #    classPlanner.get_chapters_left(),
+    #    classPlanner.get_current_chapter()
+    #    ))
+    #add_spaces(10)
+else:
+    classPlanner.create_class_plan()
 
 # infinite loop of destruction!!!
 while True:
+    logo_and_info_bar(classPlanner)
     # print messages for all of the user options and the code that prints it
     user_commands = [
-            "see day plan 1",
-            "see average calculator 2",
-            "create class plan 3",
-            "save plan file? 4",
-            "load plan file? 5",
+            "see day plan {}",
+            "see average calculator {}",
+            "mark chapter as done {}",
+            "create class plan {}",
+            "save plan file? {}",
+            "load plan file? {}",
             "press anything else to quit"
             ]
+    count = 1
     for x in user_commands:
-        print(x)
+        if count < len(user_commands):
+            print(x.format(count))
+            count += 1
+        else:
+            print(x)
 
     # lets the user press any key without exploding    
     try:
@@ -293,12 +336,12 @@ while True:
         # Actions that will happen from the users input
 
         #loads user file
-        if user_input == 3:
+        if user_input == 6:
             file_name = input("what is the file name? ")
             classPlanner.load_user_file(file_name)
             system.change_last_save(file_name)
         #saves user file
-        elif user_input == 2:
+        elif user_input == 5:
             if classPlanner.class_data["saveFile"] == "":
                 file_name = input("what is the file name? ")
                 classPlanner.write_user_file(file_name)
@@ -306,6 +349,7 @@ while True:
                 system.change_last_save(file_name)
             else:
                 classPlanner.write_user_file(classPlanner.class_data["saveFile"])
+            file_saved = True
         #calculates day planner for the user
         elif user_input == 1:
             classPlanner.day_planner()
@@ -314,8 +358,12 @@ while True:
             print("total chapter length is: {}".format(classPlanner.chapter_length_list_total()))
             classPlanner.average_calculator()
         #creates a user file for the user
-        elif user_input == 5:
+        elif user_input == 4:
             classPlanner.create_class_plan()
+        elif user_input == 3:
+            classPlanner.remove_chapter()
+            file_saved = False
+            input("press anything to continue")
         # exits the program nicely
         else:
             system.change_last_save(classPlanner.get_save_file())
@@ -323,6 +371,13 @@ while True:
     except Exception as e:
         # exits the program not nicely
         system.change_last_save(classPlanner.get_save_file())
+        if not file_saved:
+            should_file_be_saved = str(input("do you want to save changes?:(y/N) "))
+            if should_file_be_saved == 'y':
+                classPlanner.write_user_file(classPlanner.class_data["saveFile"])
+            else:
+                print("for not typing the correct thing your stuff wasn't saved ;)")
+#        print(e)
         break
 
 
