@@ -255,6 +255,7 @@ class ClassPlanner:
 #-------------------------------------------------------------------------------------------------------
 
 file_saved = False
+file_changed = False
 
 def add_spaces(number):
     """adds spaces to the terminal"""
@@ -273,8 +274,10 @@ def logo_and_info_bar(classPlanner):
         ))
     if file_saved:
         print("file: saved")
-    else:
+    elif not file_saved and file_changed:
         print("file: not saved!")
+    else:
+        pass
     add_spaces(10)
 
 #-------------------------------------------------------------------------------------------------------
@@ -339,6 +342,7 @@ while True:
             else:
                 classPlanner.write_user_file(classPlanner.class_data["saveFile"])
             file_saved = True
+            file_changed = False
         #calculates day planner for the user
         elif user_input == 1:
             classPlanner.day_planner()
@@ -352,6 +356,7 @@ while True:
         elif user_input == 3:
             classPlanner.remove_chapter()
             file_saved = False
+            file_changed = True
         # exits the program nicely
         else:
             system.change_last_save(classPlanner.get_save_file())
@@ -359,7 +364,7 @@ while True:
     except Exception as e:
         # exits the program not nicely
         system.change_last_save(classPlanner.get_save_file())
-        if not file_saved:
+        if not file_saved and file_changed:
             should_file_be_saved = str(input("do you want to save changes?:(y/N) "))
             if should_file_be_saved == 'y':
                 classPlanner.write_user_file(classPlanner.class_data["saveFile"])
