@@ -56,6 +56,7 @@ class ClassPlanner:
                 }
             }
 
+
     def remove_chapter(self):
         """removes the first chapter in the lists"""
         if len(self.get_chapter_number_list()) > 1:
@@ -92,6 +93,15 @@ class ClassPlanner:
         user_file.write(json_data)
 
 #-------------Getters and setters of the ClassPlanner--------------------------------------------------
+    
+    def get_percent_progress(self):
+        """returns how much of the class has been done"""
+        return int((self.get_current_chapter() / self.get_total_chapters()) * 100)
+    
+    def get_total_chapters(self):
+        """gets the total amount of chapters in class"""
+        return len(self.get_chapter_number_list()) + self.get_current_chapter()
+
     def get_save_file(self):
         """gets the name of users save file"""
         return self.class_data["saveFile"]
@@ -266,11 +276,12 @@ def logo_and_info_bar(classPlanner):
     # prints logo and welcome message
     os.system("cat class_planner_logo.txt")
     print("welcome to the class planner!")
-    print("class: {}\ndays left: {}\nchapters left: {}\ncurrent chapter: {}".format(
+    print("class: {}\ndays left: {}\nchapters left: {}\ncurrent chapter: {} {}%".format(
         classPlanner.get_class_name(),
         classPlanner.calculate_days_left(),
         classPlanner.get_chapters_left(),
-        classPlanner.get_current_chapter()
+        classPlanner.get_current_chapter(),
+        classPlanner.get_percent_progress()
         ))
     if file_saved:
         print("file: saved")
